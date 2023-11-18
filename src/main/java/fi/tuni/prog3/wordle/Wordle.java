@@ -13,6 +13,7 @@ import java.util.List;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.application.Platform;
+import javafx.scene.image.Image;
 
 public class Wordle extends Application {
     private GridPane grid;
@@ -22,7 +23,7 @@ public class Wordle extends Application {
     private int currentWordIndex = 0;
     private String gameMasterWord;
     private TextField[][] cellFields;
-    private TextField messageField;
+    private Label messageField;
     private boolean gameEnded = false;
     private int lastLetterColumn;
     private Button newGameBtn;
@@ -35,33 +36,40 @@ public class Wordle extends Application {
         grid.setPadding(new Insets(10));
         grid.setHgap(5);
         grid.setVgap(5);
+        
         newGameBtn = new Button("Start new game");
-        messageField = new TextField(); 
-        messageField.setEditable(false);
+        messageField = new Label(); 
         messageField.setId("infoBox");
         newGameBtn.setId("newGameBtn");
         newGameBtn.setOnAction(event -> resetGame());
         newGameBtn.setFocusTraversable(false);
+        
+        
 
         HBox topBar = new HBox(newGameBtn, messageField);
         HBox.setHgrow(messageField, Priority.ALWAYS);
         topBar.setAlignment(Pos.CENTER);
         topBar.setSpacing(5);
-        HBox.setMargin(newGameBtn, new Insets(0, 0, 0, 10));
+        HBox.setMargin(newGameBtn, new Insets(10, 0, 0, 10));
+        HBox.setMargin(messageField, new Insets(10, 10, 0, 0));
 
         VBox root = new VBox(topBar, grid); 
         root.setAlignment(Pos.CENTER);
         root.setSpacing(10);
 
         startNewGame();
-        Scene scene = new Scene(root, 500, 500);
+        Scene scene = new Scene(root);
         grid.setAlignment(Pos.CENTER);
         grid.setStyle("-fx-background-color: #99a682;");
+        
+        primaryStage.setTitle("Wordle");
+        //primaryStage.getIcons().add(new Image(Wordle.class.getResourceAsStream("icon.png")));
         primaryStage.setScene(scene);
 
         primaryStage.show();
         Platform.runLater(() -> cellFields[0][0].requestFocus());
     }
+
 
     private void startNewGame() {
         gameEnded = false;
@@ -187,6 +195,7 @@ public class Wordle extends Application {
 
             if (guess.equals(gameMasterWord)) {
                 messageField.setText("Congratulations, you won!");
+                messageField.setTextFill(Color.GREEN);
                 gameEnded = true;
                 Platform.runLater(() -> newGameBtn.requestFocus());
             } else {
@@ -196,6 +205,7 @@ public class Wordle extends Application {
                     cellFields[currentRow][currentColumn].requestFocus();
                 } else {
                     messageField.setText("Game over, you lost!");
+                    messageField.setTextFill(Color.RED);
                     gameEnded = true;
                     Platform.runLater(() -> newGameBtn.requestFocus());
                 }
@@ -209,7 +219,7 @@ public class Wordle extends Application {
         currentWordIndex++;
         gameEnded = true;
         grid.getChildren().clear();
-        messageField.clear();
+        messageField.setText("");
         startNewGame(); 
     }
 
